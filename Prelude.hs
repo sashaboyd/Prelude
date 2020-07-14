@@ -8,6 +8,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UnicodeSyntax #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# OPTIONS_HADDOCK not-home, prune #-}
 
@@ -21,6 +22,8 @@ module Prelude
     (!),
     swapF,
     prettyPrint,
+    prettyText,
+    prettyText',
     (&&),
     (||),
     (|>),
@@ -46,10 +49,11 @@ import Data.Functor.Rep as All
 import Data.Profunctor as All
 import Data.Profunctor.Strong as All
 import Data.Semigroup as All
+import qualified Data.Text.Lazy as Lazy
 import Data.These as All
 import GHC.Natural (intToNatural)
 import NumHask.Prelude as All hiding ((&&), (.), Distributive, First (..), Last (..), fold, yield, (||))
-import Text.PrettyPrint.Leijen.Text as All (Pretty (..), renderPretty, text, char, textStrict, nest)
+import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 
 -- | Shorthand for natural numbers
 type N = Natural
@@ -131,7 +135,15 @@ infixr 8 .:
 
 -- | Replacement for 'print' with nicer output where possible
 prettyPrint :: (Pretty a, MonadIO m) => a -> m ()
-prettyPrint = print . renderPretty 0.4 80 . pretty
+prettyPrint = putStrLn . prettyText
+
+-- | Pretty-print a type to (lazy) 'Lazy.Text'
+prettyText :: Pretty a => a -> Lazy.Text
+prettyText = displayT . renderPretty 0.4 80 . pretty
+
+-- | Pretty-print a type to (strict) 'Text'
+prettyText' :: Pretty a => a -> Lazy.Text
+prettyText' = displayT . renderPretty 0.4 80 . pretty
 
 -- | A renaming of 'sequence', for situations where it looks nothing like
 -- sequencing
