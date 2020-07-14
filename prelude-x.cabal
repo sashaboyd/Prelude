@@ -26,3 +26,4 @@ library
                      , recursion-schemes
                      , text
                      , these
+                     , wl-pprint-text

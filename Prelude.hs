@@ -19,8 +19,8 @@ module Prelude
   ( module All,
     N,
     (!),
-    say,
     swapF,
+    prettyPrint,
     (&&),
     (||),
     (|>),
@@ -49,6 +49,7 @@ import Data.Semigroup as All
 import Data.These as All
 import GHC.Natural (intToNatural)
 import NumHask.Prelude as All hiding ((&&), (.), Distributive, First (..), Last (..), fold, yield, (||))
+import Text.PrettyPrint.Leijen.Text as All (Pretty (..), renderPretty, text, char, textStrict, nest)
 
 -- | Shorthand for natural numbers
 type N = Natural
@@ -128,9 +129,9 @@ infixr 8 |>>
 
 infixr 8 .:
 
--- | Monomorphic version of 'putStrLn', to avoid type annotations
-say :: Text -> IO ()
-say = putStrLn
+-- | Replacement for 'print' with nicer output where possible
+prettyPrint :: (Pretty a, MonadIO m) => a -> m ()
+prettyPrint = print . renderPretty 0.4 80 . pretty
 
 -- | A renaming of 'sequence', for situations where it looks nothing like
 -- sequencing
