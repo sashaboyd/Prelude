@@ -1,0 +1,10 @@
+packages: .
+optional-packages: ./*/*.cabal
+documentation: true
+haddock-html: true
+haddock-hoogle: true
+haddock-executables: true
+haddock-tests: true
+haddock-internal: true
+haddock-hyperlink-source: true
+allow-newer: numhask-prelude:base, numhask-prelude:protolude, base-noprelude:base, coercible-utils:base

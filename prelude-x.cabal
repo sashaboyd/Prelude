@@ -1,0 +1,11 @@
+cabal-version:       2.4
+name:                prelude-x
+version:             0.1.0.0
+synopsis:            Custom Prelude with functionality I often use
+description:         A Prelude based on numhask-prelude, but with some extra exports and utilities
+license:             BSD-3-Clause
+license-file:        LICENSE
+author:              Sasha Boyd
+maintainer:          contact@sashaboyd.com
+build-type:          Simple
+extra-source-files:  README.md, CHANGELOG.md
