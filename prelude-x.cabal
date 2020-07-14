@@ -9,3 +9,20 @@ author:              Sasha Boyd
 maintainer:          contact@sashaboyd.com
 build-type:          Simple
 extra-source-files:  README.md, CHANGELOG.md
+
+library
+  exposed-modules:     Prelude
+  default-language:    Haskell2010
+
+  build-depends:       adjunctions
+                     , base >=4.14 && <4.15
+                     , comonad
+                     , containers
+                     , distributive
+                     , free
+                     , numhask
+                     , numhask-prelude
+                     , profunctors
+                     , recursion-schemes
+                     , text
+                     , these
