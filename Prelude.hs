@@ -40,6 +40,7 @@ import Control.Comonad as All
 import Control.Comonad.Cofree as All (Cofree)
 import Control.Comonad.Trans.Cofree as All (CofreeF (..))
 import Control.Monad.Free as All (Free)
+import Control.Newtype as All
 import Data.Coerce as All
 import Data.Distributive as All
 import Data.Functor.Classes as All

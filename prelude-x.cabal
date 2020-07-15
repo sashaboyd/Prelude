@@ -20,6 +20,7 @@ library
                      , containers
                      , distributive
                      , free
+                     , newtype ^>= 0.2.2.0
                      , numhask
                      , numhask-prelude
                      , profunctors
