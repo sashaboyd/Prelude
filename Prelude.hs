@@ -53,7 +53,7 @@ import Data.Semigroup as All
 import qualified Data.Text.Lazy as Lazy
 import Data.These as All
 import GHC.Natural (intToNatural)
-import NumHask.Prelude as All hiding ((&&), (.), Distributive, First (..), Last (..), fold, yield, (||))
+import NumHask.Prelude as All hiding ((&&), (.), Distributive, First (..), Last (..), embed, fold, hoist, pack, unpack, yield, (||))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 
 -- | Shorthand for natural numbers
@@ -153,49 +153,38 @@ prettyText' = displayT . renderPretty 0.4 80 . pretty
 swapF :: forall t f a. (Traversable t, Applicative f) => t (f a) -> f (t a)
 swapF = sequenceA
 
--- | 'Natural's don't have a 'Normed' instance for some reason, so we define it here
+-- | 'Normed' instance for 'Int's that returns a 'Natural'
 instance Normed Int Natural where
-  normL1 = intToNatural . abs
-  normL2 = intToNatural . abs
+  norm = intToNatural . abs
 
 -- | Rectilinear norm for 'Int' 'NumHask.Data.Pair's
---
--- Only the L¹ norm is defined, since the L² norm doesn't make sense here
 --
 -- NOTE: Because of the way variables are matched and then constrained, Pair Int
 -- technically matches the (ExpField a, Normed a a) => Normed (Pair a) a
 -- instance, even though Ints don't match the ExpField constraint, so we have to
 -- declare this instance as overlapping that one.
 instance {-# OVERLAPPING #-} Normed (Pair Int) Int where
-  normL1 (Pair x y) = normL1 x + normL1 y
-  normL2 (Pair _ _) = throw (NoMethodError "normL2 can't be defined for Int pairs")
+  norm (Pair x y) = norm x + norm y
 
 -- | Rectilinear norm for 'Int' 'NumHask.Data.Pair's that returns a 'Natural'
 instance {-# OVERLAPPING #-} Normed (Pair Int) Natural where
-  normL1 (Pair x y) = normL1 x + normL1 y
-  normL2 (Pair _ _) = throw (NoMethodError "normL2 can't be defined for Int pairs")
+  norm (Pair x y) = norm x + norm y
 
 -- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
 instance {-# OVERLAPPING #-} Normed (Pair Natural) Natural where
-  normL1 (Pair x y) = normL1 x + normL1 y
-  normL2 (Pair _ _) = throw (NoMethodError "normL2 can't be defined for Int pairs")
+  norm (Pair x y) = norm x + norm y
 
 -- | Rectilinear distance for 'Int' 'NumHask.Data.Pair's
 --
 -- This goes by a bunch of different names, like Manhattan distance, taxicab
 -- distance, etc.
---
--- Only the L¹ distance is defined, since L² distance doesn't make sense here
 instance {-# OVERLAPPING #-} Metric (Pair Int) Int where
-  distanceL1 a b = normL1 (a - b)
-  distanceL2 _ _ = throw (NoMethodError "distanceL2 can't be defined for Int pairs")
+  distance a b = norm (a - b)
 
 -- | Rectilinear distance that returns a 'Natural'
 instance {-# OVERLAPPING #-} Metric (Pair Int) Natural where
-  distanceL1 a b = normL1 (a - b)
-  distanceL2 _ _ = throw (NoMethodError "distanceL2 can't be defined for Int pairs")
+  distance a b = norm (a - b)
 
 -- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
 instance {-# OVERLAPPING #-} Metric (Pair Natural) Natural where
-  distanceL1 a b = normL1 (a - b)
-  distanceL2 _ _ = throw (NoMethodError "distanceL2 can't be defined for Int pairs")
+  distance a b = norm (a - b)

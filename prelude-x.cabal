@@ -21,8 +21,7 @@ library
                      , distributive
                      , free
                      , newtype ^>= 0.2.2.0
-                     , numhask
-                     , numhask-prelude
+                     , numhask ^>= 0.6.0.0
                      , profunctors
                      , recursion-schemes
                      , text
@@ -30,3 +29,160 @@ library
                      , wl-pprint-text
 
   default-extensions:  NoImplicitPrelude
+
+  reexported-modules:  Control.Alternative.Free
+                     , Control.Applicative
+                     , Control.Applicative.Free
+                     , Control.Arrow
+                     , Control.Category
+                     , Control.Comonad
+                     , Control.Comonad.Cofree
+                     , Control.Comonad.Cofree.Class
+                     , Control.Comonad.Env
+                     , Control.Comonad.Env.Class
+                     , Control.Comonad.Store
+                     , Control.Comonad.Store.Class
+                     , Control.Comonad.Representable.Store
+                     , Control.Comonad.Trans.Coiter
+                     , Control.Concurrent
+                     , Control.Concurrent.Chan
+                     , Control.Concurrent.MVar
+                     , Control.Concurrent.QSem
+                     , Control.Concurrent.QSemN
+                     , Control.Exception
+                     , Control.Exception.Base
+                     , Control.Monad
+                     , Control.Monad.Fail
+                     , Control.Monad.Fix
+                     , Control.Monad.Free
+                     , Control.Monad.Free.Class
+                     , Control.Monad.Free.TH
+                     , Control.Monad.IO.Class
+                     , Control.Monad.Instances
+                     , Control.Monad.ST
+                     , Control.Monad.ST.Lazy
+                     , Control.Monad.ST.Lazy.Safe
+                     , Control.Monad.ST.Lazy.Unsafe
+                     , Control.Monad.ST.Safe
+                     , Control.Monad.ST.Strict
+                     , Control.Monad.ST.Unsafe
+                     , Control.Monad.Trans.Iter
+                     , Control.Monad.Representable.Reader
+                     , Control.Monad.Representable.State
+                     , Control.Monad.Zip
+                     , Control.Newtype
+                     , Data.Bifoldable
+                     , Data.Bifunctor
+                     , Data.Bitraversable
+                     , Data.Bits
+                     , Data.Bool
+                     , Data.Char
+                     , Data.Coerce
+                     , Data.Data
+                     , Data.Dynamic
+                     , Data.Distributive
+                     , Data.Distributive.Generic
+                     , Data.Either
+                     , Data.Eq
+                     , Data.Fixed
+                     , Data.Foldable
+                     , Data.Function
+                     , Data.Functor
+                     , Data.Functor.Classes
+                     , Data.Functor.Compose
+                     , Data.Functor.Const
+                     , Data.Functor.Contravariant
+                     , Data.Functor.Identity
+                     , Data.Functor.Product
+                     , Data.Functor.Sum
+                     , Data.Int
+                     , Data.IntMap
+                     , Data.IntMap.Lazy
+                     , Data.IntMap.Strict
+                     , Data.IntSet
+                     , Data.Ix
+                     , Data.Kind
+                     , Data.List
+                     , Data.List.NonEmpty
+                     , Data.Map
+                     , Data.Map.Lazy
+                     , Data.Map.Strict
+                     , Data.Maybe
+                     , Data.Monoid
+                     , Data.Ord
+                     , Data.Proxy
+                     , Data.Ratio
+                     , Data.Semigroup
+                     , Data.Sequence
+                     , Data.Set
+                     , Data.String
+                     , Data.Tree
+                     , Data.Functor.Rep
+                     , Data.Functor.Contravariant.Rep
+                     , Data.Functor.Adjunction
+                     , Data.Functor.Contravariant.Adjunction
+                     , Data.Functor.Base
+                     , Data.Functor.Composition
+                     , Data.Functor.Foldable
+                     , Data.Functor.Foldable.TH
+                     , Data.Profunctor
+                     , Data.Text
+                     , Data.Text.IO
+                     , Data.Text.Lazy
+                     , Data.Text.Lazy.IO
+                     , Data.Text.Read
+                     , Data.These
+                     , Data.These.Combinators
+                     , Data.Traversable
+                     , Data.Tuple
+                     , Data.Type.Bool
+                     , Data.Type.Coercion
+                     , Data.Type.Equality
+                     , Data.Typeable
+                     , Data.Unique
+                     , Data.Version
+                     , Data.Void
+                     , Data.Word
+                     , Debug.Trace
+                     , Numeric.Natural
+                     , NumHask.Algebra.Abstract as Algebra.Abstract
+                     , NumHask.Algebra.Abstract.Action as Algebra.Abstract.Action
+                     , NumHask.Algebra.Abstract.Additive as Algebra.Abstract.Additive
+                     , NumHask.Algebra.Abstract.Field as Algebra.Abstract.Field
+                     , NumHask.Algebra.Abstract.Group as Algebra.Abstract.Group
+                     , NumHask.Algebra.Abstract.Lattice as Algebra.Abstract.Lattice
+                     , NumHask.Algebra.Abstract.Module as Algebra.Abstract.Module
+                     , NumHask.Algebra.Abstract.Multiplicative as Algebra.Abstract.Multiplicative
+                     , NumHask.Algebra.Abstract.Ring as Algebra.Abstract.Ring
+                     , NumHask.Analysis.Metric as Analysis.Metric
+                     , NumHask.Data.Complex as Data.Complex
+                     , NumHask.Data.Integral as Data.Integral
+                     , NumHask.Data.LogField as Data.LogField
+                     , NumHask.Data.Pair as Data.Pair
+                     , NumHask.Data.Positive as Data.Positive
+                     , NumHask.Data.Rational as Data.Rational
+                     , NumHask.Data.Wrapped as Data.Wrapped
+                     , NumHask.Prelude
+                     , GHC.Show as Show
+                     , System.Environment
+                     , System.Environment.Blank
+                     , System.Exit
+                     , System.IO
+                     , System.IO.Error
+                     , System.IO.Unsafe
+                     , System.Info
+                     , System.Mem
+                     , System.Mem.StableName
+                     , System.Mem.Weak
+                     , System.Posix.Types
+                     , System.Timeout
+                     , Text.PrettyPrint.Leijen.Text
+                     , Text.PrettyPrint.Leijen.Text.Monadic
+                     , Text.Printf
+                     , Text.Read
+                     , Text.Read.Lex
+                     , Text.Show
+                     , Text.Show.Functions
+                     , Type.Reflection
+                     , Type.Reflection.Unsafe
+                     , Unsafe.Coerce
