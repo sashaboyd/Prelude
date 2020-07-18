@@ -53,7 +53,7 @@ import Data.Profunctor.Strong as All
 import Data.Semigroup as All
 import qualified Data.Text.Lazy as Lazy
 import Data.These as All
-import GHC.Natural (intToNatural)
+import GHC.Natural (intToNatural, naturalFromInteger)
 import NumHask.Prelude as All hiding ((&&), (.), Distributive, First (..), Last (..), embed, fold, hoist, pack, unpack, yield, (||))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 
@@ -158,6 +158,10 @@ swapF = sequenceA
 instance Normed Int Natural where
   norm = intToNatural . abs
 
+-- | 'Normed' instance for 'Integer's that returns a 'Natural'
+instance Normed Integer Natural where
+  norm = naturalFromInteger . abs
+
 -- | Rectilinear norm for 'Int' 'NumHask.Data.Pair's
 --
 -- NOTE: Because of the way variables are matched and then constrained, Pair Int
@@ -167,8 +171,14 @@ instance Normed Int Natural where
 instance {-# OVERLAPPING #-} Normed (Pair Int) Int where
   norm (Pair x y) = norm x + norm y
 
+instance {-# OVERLAPPING #-} Normed (Pair Integer) Integer where
+  norm (Pair x y) = norm x + norm y
+
 -- | Rectilinear norm for 'Int' 'NumHask.Data.Pair's that returns a 'Natural'
 instance {-# OVERLAPPING #-} Normed (Pair Int) Natural where
+  norm (Pair x y) = norm x + norm y
+
+instance {-# OVERLAPPING #-} Normed (Pair Integer) Natural where
   norm (Pair x y) = norm x + norm y
 
 -- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
@@ -182,8 +192,14 @@ instance {-# OVERLAPPING #-} Normed (Pair Natural) Natural where
 instance {-# OVERLAPPING #-} Metric (Pair Int) Int where
   distance a b = norm (a - b)
 
+instance {-# OVERLAPPING #-} Metric (Pair Integer) Integer where
+  distance a b = norm (a - b)
+
 -- | Rectilinear distance that returns a 'Natural'
 instance {-# OVERLAPPING #-} Metric (Pair Int) Natural where
+  distance a b = norm (a - b)
+
+instance {-# OVERLAPPING #-} Metric (Pair Integer) Natural where
   distance a b = norm (a - b)
 
 -- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
