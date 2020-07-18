@@ -15,7 +15,8 @@
 -- |
 -- Custom Prelude that focuses on applying algebra and category theory to ordinary code.
 --
--- In particular, comonads are treated as first-class citizens, profunctors are available by default, and
+-- In particular, comonads are treated as first-class citizens, profunctors are
+-- available by default, and safe functions are preferred by default.
 module Prelude
   ( module All,
     N,
