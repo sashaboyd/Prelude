@@ -20,17 +20,29 @@
 module Prelude
   ( module All,
     N,
+    Z,
+    type (+),
+    type (⊕),
+    type (×),
+    type (⊗),
+    type (.),
+    type (∘),
     (!),
+    (!?),
     swapF,
     prettyPrint,
     prettyText,
     prettyText',
     (&&),
+    (∧),
     (||),
+    (∨),
     (|>),
     (|>>),
     (<|),
     (<<|),
+    (∘),
+    (∘∘),
     (.:),
   )
 where
@@ -47,10 +59,15 @@ import Data.Distributive as All
 import Data.Functor.Classes as All
 import Data.Functor.Compose as All
 import Data.Functor.Foldable as All
+import qualified Data.Functor.Product as Functor
 import Data.Functor.Rep as All
+import qualified Data.Functor.Sum as Functor
+import Data.MonoTraversable as All hiding (headMay, lastMay, maximumMay, minimumMay)
 import Data.Profunctor as All
 import Data.Profunctor.Strong as All
 import Data.Semigroup as All
+import Data.Sequences as All (Index, IsSequence, SemiSequence)
+import qualified Data.Sequences as Seq
 import qualified Data.Text.Lazy as Lazy
 import Data.These as All
 import GHC.Natural (intToNatural, naturalFromInteger)
@@ -63,11 +80,40 @@ type N = Natural
 -- | Shorthand for integers
 type Z = Integer
 
+-- | Infix version of sum types
+type a + b = Either a b
+
+-- | Infix version of the sum of two functors
+type f ⊕ g = Functor.Sum f g
+
+-- | Unicode product type
+type a × b = (a, b)
+
+-- | Infix version of the product of two functors
+type f ⊗ g = Functor.Product f g
+
+-- | Infix operator for functor composition
+type f ∘ g = Compose f g
+
+-- | Infix operator for functor composition
+type f . g = Compose f g
+
 -- | Use 'index' from the 'Representable' class for indexing by default
 (!) :: forall f a. Representable f => f a -> Rep f -> a
 (!) = index
 
 infixl 9 !
+
+-- | Use 'Seq.index' from the 'Sequence' class for indexing that may fail
+--
+-- TODO: it'd be better if this was a more general index operator that worked
+-- for dictionary-like types as well and that allowed for a more general failure
+-- type, but there doesn't seem to be a good way to get those things at the
+-- moment.
+(!?) :: forall s. IsSequence s => s -> Index s -> Maybe (Element s)
+(!?) = Seq.index
+
+infixl 9 !?
 
 -- | Conjunction that works with more than just 'Bool's
 (&&) :: forall a. MeetSemiLattice a => a -> a -> a
@@ -75,11 +121,19 @@ infixl 9 !
 
 infixr 3 &&
 
+(∧) :: forall a. MeetSemiLattice a => a -> a -> a
+(∧) = (/\)
+
+infixr 3 ∧
+
 -- | Disjunction that works with more than just 'Bool's
 (||) :: forall a. JoinSemiLattice a => a -> a -> a
 (||) = (\/)
 
 infixr 2 ||
+
+(∨) :: forall a. JoinSemiLattice a => a -> a -> a
+(∨) = (\/)
 
 -- | A “pipe” for mapping a function over the codomain of a profunctor
 --
@@ -117,6 +171,30 @@ infixr 9 |>
 
 infixr 8 |>>
 
+(∘) ::
+  forall k a b c.
+  Category k =>
+  b `k` c ->
+  (a `k` b) ->
+  (a `k` c)
+(∘) = (.)
+
+-- | Composition with a function (or more generally, morphism) of two arguments
+--
+-- > (f ∘∘ g) x y = f (g x y)
+--
+-- NOTE: this is generalized to categories, but you can read the type signature as:
+--
+-- > (∘∘) :: (b -> c) -> (a1 -> a2 -> b) -> (a1 -> a2 -> c)
+(∘∘) ::
+  forall k a1 a2 b c.
+  Category k =>
+  b `k` c ->
+  (a1 -> (a2 `k` b)) ->
+  a1 ->
+  (a2 `k` c)
+(∘∘) = (∘) (∘) (∘)
+
 -- | Composition with a function (or more generally, morphism) of two arguments
 --
 -- > (f .: g) x y = f (g x y)
@@ -151,6 +229,9 @@ prettyText' = displayT . renderPretty 0.4 80 . pretty
 -- sequencing
 --
 -- This basically just swaps two wrappers/functors around
+--
+-- An alternative to this in some situations is 'distribute', for types in the
+-- 'Distributive' class
 swapF :: forall t f a. (Traversable t, Applicative f) => t (f a) -> f (t a)
 swapF = sequenceA
 

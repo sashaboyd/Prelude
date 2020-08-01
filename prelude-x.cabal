@@ -20,6 +20,7 @@ library
                      , containers
                      , distributive
                      , free
+                     , mono-traversable
                      , newtype ^>= 0.2.2.0
                      , numhask ^>= 0.6.0.0
                      , profunctors
@@ -40,9 +41,9 @@ library
                      , Control.Comonad.Cofree.Class
                      , Control.Comonad.Env
                      , Control.Comonad.Env.Class
+                     , Control.Comonad.Representable.Store
                      , Control.Comonad.Store
                      , Control.Comonad.Store.Class
-                     , Control.Comonad.Representable.Store
                      , Control.Comonad.Trans.Coiter
                      , Control.Concurrent
                      , Control.Concurrent.Chan
@@ -59,6 +60,8 @@ library
                      , Control.Monad.Free.TH
                      , Control.Monad.IO.Class
                      , Control.Monad.Instances
+                     , Control.Monad.Representable.Reader
+                     , Control.Monad.Representable.State
                      , Control.Monad.ST
                      , Control.Monad.ST.Lazy
                      , Control.Monad.ST.Lazy.Safe
@@ -67,8 +70,6 @@ library
                      , Control.Monad.ST.Strict
                      , Control.Monad.ST.Unsafe
                      , Control.Monad.Trans.Iter
-                     , Control.Monad.Representable.Reader
-                     , Control.Monad.Representable.State
                      , Control.Monad.Zip
                      , Control.Newtype
                      , Data.Bifoldable
@@ -79,21 +80,29 @@ library
                      , Data.Char
                      , Data.Coerce
                      , Data.Data
-                     , Data.Dynamic
                      , Data.Distributive
                      , Data.Distributive.Generic
+                     , Data.Dynamic
                      , Data.Either
                      , Data.Eq
                      , Data.Fixed
                      , Data.Foldable
                      , Data.Function
                      , Data.Functor
+                     , Data.Functor.Adjunction
+                     , Data.Functor.Base
                      , Data.Functor.Classes
                      , Data.Functor.Compose
+                     , Data.Functor.Composition
                      , Data.Functor.Const
                      , Data.Functor.Contravariant
+                     , Data.Functor.Contravariant.Adjunction
+                     , Data.Functor.Contravariant.Rep
+                     , Data.Functor.Foldable
+                     , Data.Functor.Foldable.TH
                      , Data.Functor.Identity
                      , Data.Functor.Product
+                     , Data.Functor.Rep
                      , Data.Functor.Sum
                      , Data.Int
                      , Data.IntMap
@@ -108,24 +117,18 @@ library
                      , Data.Map.Lazy
                      , Data.Map.Strict
                      , Data.Maybe
+                     , Data.MonoTraversable
                      , Data.Monoid
+                     , Data.NonNull
                      , Data.Ord
+                     , Data.Profunctor
                      , Data.Proxy
                      , Data.Ratio
                      , Data.Semigroup
                      , Data.Sequence
+                     , Data.Sequences
                      , Data.Set
                      , Data.String
-                     , Data.Tree
-                     , Data.Functor.Rep
-                     , Data.Functor.Contravariant.Rep
-                     , Data.Functor.Adjunction
-                     , Data.Functor.Contravariant.Adjunction
-                     , Data.Functor.Base
-                     , Data.Functor.Composition
-                     , Data.Functor.Foldable
-                     , Data.Functor.Foldable.TH
-                     , Data.Profunctor
                      , Data.Text
                      , Data.Text.IO
                      , Data.Text.Lazy
@@ -134,6 +137,7 @@ library
                      , Data.These
                      , Data.These.Combinators
                      , Data.Traversable
+                     , Data.Tree
                      , Data.Tuple
                      , Data.Type.Bool
                      , Data.Type.Coercion
@@ -144,7 +148,7 @@ library
                      , Data.Void
                      , Data.Word
                      , Debug.Trace
-                     , Numeric.Natural
+                     , GHC.Show as Show
                      , NumHask.Algebra.Abstract as Algebra.Abstract
                      , NumHask.Algebra.Abstract.Action as Algebra.Abstract.Action
                      , NumHask.Algebra.Abstract.Additive as Algebra.Abstract.Additive
@@ -163,7 +167,7 @@ library
                      , NumHask.Data.Rational as Data.Rational
                      , NumHask.Data.Wrapped as Data.Wrapped
                      , NumHask.Prelude
-                     , GHC.Show as Show
+                     , Numeric.Natural
                      , System.Environment
                      , System.Environment.Blank
                      , System.Exit
