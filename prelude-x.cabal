@@ -23,6 +23,7 @@ library
                      , mono-traversable
                      , newtype ^>= 0.2.2.0
                      , numhask ^>= 0.6.0.0
+                     , pointed
                      , profunctors
                      , recursion-schemes
                      , text
@@ -79,6 +80,7 @@ library
                      , Data.Bool
                      , Data.Char
                      , Data.Coerce
+                     , Data.Copointed
                      , Data.Data
                      , Data.Distributive
                      , Data.Distributive.Generic
@@ -121,6 +123,7 @@ library
                      , Data.Monoid
                      , Data.NonNull
                      , Data.Ord
+                     , Data.Pointed
                      , Data.Profunctor
                      , Data.Proxy
                      , Data.Ratio

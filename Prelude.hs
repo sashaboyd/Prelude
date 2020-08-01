@@ -44,6 +44,8 @@ module Prelude
     (∘),
     (∘∘),
     (.:),
+    goWith,
+    getOut,
   )
 where
 
@@ -55,6 +57,7 @@ import Control.Comonad.Trans.Cofree as All (CofreeF (..))
 import Control.Monad.Free as All (Free)
 import Control.Newtype as All
 import Data.Coerce as All
+import Data.Copointed as All
 import Data.Distributive as All
 import Data.Functor.Classes as All
 import Data.Functor.Compose as All
@@ -63,6 +66,7 @@ import qualified Data.Functor.Product as Functor
 import Data.Functor.Rep as All
 import qualified Data.Functor.Sum as Functor
 import Data.MonoTraversable as All hiding (headMay, lastMay, maximumMay, minimumMay)
+import Data.Pointed as All
 import Data.Profunctor as All
 import Data.Profunctor.Strong as All
 import Data.Semigroup as All
@@ -212,6 +216,14 @@ infixr 8 |>>
 (.:) = (.) (.) (.)
 
 infixr 8 .:
+
+-- | More readable synonym for 'point'
+goWith :: forall p a. Pointed p => a -> p a
+goWith = point
+
+-- | More readable synonym for 'copoint'
+getOut :: forall p a. Copointed p => p a -> a
+getOut = copoint
 
 -- | Replacement for 'print' with nicer output where possible
 prettyPrint :: (Pretty a, MonadIO m) => a -> m ()
