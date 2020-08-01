@@ -1,12 +1,16 @@
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -28,7 +32,7 @@ module Prelude
     type (.),
     type (∘),
     (!),
-    (!?),
+    (!!),
     swapF,
     prettyPrint,
     prettyText,
@@ -38,14 +42,16 @@ module Prelude
     (||),
     (∨),
     (|>),
-    (|>>),
     (<|),
-    (<<|),
     (∘),
     (∘∘),
     (.:),
     goWith,
     getOut,
+    Partial (..),
+    Functional (..),
+    ($),
+    (&),
   )
 where
 
@@ -65,17 +71,21 @@ import Data.Functor.Foldable as All
 import qualified Data.Functor.Product as Functor
 import Data.Functor.Rep as All
 import qualified Data.Functor.Sum as Functor
+import qualified Data.IntMap as IntMap
+import qualified Data.Map as Map
 import Data.MonoTraversable as All hiding (headMay, lastMay, maximumMay, minimumMay)
 import Data.Pointed as All
 import Data.Profunctor as All
+import Data.Profunctor.Sieve
 import Data.Profunctor.Strong as All
 import Data.Semigroup as All
+import qualified Data.Sequence ()
 import Data.Sequences as All (Index, IsSequence, SemiSequence)
 import qualified Data.Sequences as Seq
 import qualified Data.Text.Lazy as Lazy
 import Data.These as All
 import GHC.Natural (intToNatural, naturalFromInteger)
-import NumHask.Prelude as All hiding ((&&), (.), Distributive, First (..), Last (..), embed, fold, hoist, pack, unpack, yield, (||))
+import NumHask.Prelude as All hiding (($), (&), (&&), (.), Distributive, First (..), Last (..), embed, fold, hoist, pack, unpack, yield, (||))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 
 -- | Shorthand for natural numbers
@@ -102,23 +112,6 @@ type f ∘ g = Compose f g
 -- | Infix operator for functor composition
 type f . g = Compose f g
 
--- | Use 'index' from the 'Representable' class for indexing by default
-(!) :: forall f a. Representable f => f a -> Rep f -> a
-(!) = index
-
-infixl 9 !
-
--- | Use 'Seq.index' from the 'Sequence' class for indexing that may fail
---
--- TODO: it'd be better if this was a more general index operator that worked
--- for dictionary-like types as well and that allowed for a more general failure
--- type, but there doesn't seem to be a good way to get those things at the
--- moment.
-(!?) :: forall s. IsSequence s => s -> Index s -> Maybe (Element s)
-(!?) = Seq.index
-
-infixl 9 !?
-
 -- | Conjunction that works with more than just 'Bool's
 (&&) :: forall a. MeetSemiLattice a => a -> a -> a
 (&&) = (/\)
@@ -138,42 +131,6 @@ infixr 2 ||
 
 (∨) :: forall a. JoinSemiLattice a => a -> a -> a
 (∨) = (\/)
-
--- | A “pipe” for mapping a function over the codomain of a profunctor
---
--- This can also be used just for function composition, similar to '.'
-(<|) :: Profunctor p => (b -> c) -> p a b -> p a c
-(<|) = rmap
-
-infixr 9 <|
-
--- | A “pipe” for a curried profunctor with two arguments
-(<<|) ::
-  (Profunctor p1, Profunctor p2) =>
-  (b -> c) ->
-  p1 a1 (p2 a2 b) ->
-  p1 a1 (p2 a2 c)
-(<<|) = rmap rmap rmap
-
-infixr 8 <<|
-
--- | A “pipe” for mapping over the domain of a of a profunctor
---
--- This can also be used just for function composition, similar to '>>>'
-(|>) :: Profunctor p => (a -> b) -> p b c -> p a c
-(|>) = lmap
-
-infixr 9 |>
-
--- | A “pipe” for mapping over the domain of the domain of a profunctor
-(|>>) ::
-  (Profunctor p1, Profunctor p2) =>
-  (a -> b) ->
-  p2 (p1 a c1) c2 ->
-  p2 (p1 b c1) c2
-(|>>) = lmap lmap lmap
-
-infixr 8 |>>
 
 (∘) ::
   forall k a b c.
@@ -246,6 +203,94 @@ prettyText' = displayT . renderPretty 0.4 80 . pretty
 -- 'Distributive' class
 swapF :: forall t f a. (Traversable t, Applicative f) => t (f a) -> f (t a)
 swapF = sequenceA
+
+-- | A 'Map' as a 'Profunctor'
+--
+-- The ‘domain’ of the profunctor represents a value that might be turned into a
+-- key, while the codomain represents a value that might belong to the map
+newtype MapProf k a b = MapProf'
+  { getMapProf :: (a -> Maybe k, Map k b)
+  }
+  deriving (Generic, Functor)
+
+pattern MapProf :: (a -> Maybe k) -> Map k b -> MapProf k a b
+pattern MapProf f m = MapProf' (f, m)
+
+{-# COMPLETE MapProf #-}
+
+instance Profunctor (MapProf k) where
+  lmap f (MapProf g m) = MapProf (lmap f g) m
+  rmap f (MapProf g m) = MapProf g (f <$> m)
+
+-- | Partial functions and dictionary-like objects
+class Partial a b p | p -> a, p -> b where
+  runPartial :: p -> a -> Maybe b
+  unsafeRunPartial :: p -> a -> b
+  unsafeRunPartial p a = case runPartial p a of
+    Nothing -> panic "Index out of bounds"
+    Just b -> b
+
+instance Partial a b (a -> Maybe b) where runPartial = id
+
+instance Ord k => Partial k a (Map k a) where runPartial = flip Map.lookup
+
+instance Partial Int a (IntMap a) where runPartial = flip IntMap.lookup
+
+instance {-# OVERLAPPABLE #-} (IsSequence s, i ~ Index s, e ~ Element s) => Partial i e s where runPartial = Seq.index
+
+-- | Things that can be ‘run’ or ‘applied’ to some argument
+class Functional a b r | r -> a, r -> b where
+  run :: r -> a -> b
+
+instance Functional a b (a -> b) where
+  run f a = f a
+
+-- NOTE: unfortunately, this instance conflicts with the cosieve instance
+-- instance {-# OVERLAPPABLE #-} Sieve (p f) f => Functional a (f b) (p f a b) where run = sieve
+
+instance {-# OVERLAPPABLE #-} Cosieve (p f) f => Functional (f a) b (p f a b) where run = cosieve
+
+instance {-# OVERLAPPABLE #-} (Representable f, Rep f ~ a) => Functional a b (f b) where run = index
+
+-- | Infix synonym for 'runPartial'; allows indexing into dictionary-like
+-- objects and running partial functions
+(!) :: forall a b p. Partial a b p => p -> a -> Maybe b
+(!) = runPartial
+
+infixl 9 !
+
+-- | Infix synonym for 'unsafeRunPartial'
+(!!) :: forall a b p. Partial a b p => p -> a -> b
+(!!) = unsafeRunPartial
+
+-- | Generalized version of 'Prelude.$' from base
+($) :: forall a b r. Functional a b r => r -> a -> b
+($) = run
+
+infixr 0 $
+
+(&) :: forall a b r. Functional a b r => a -> r -> b
+(&) = flip run
+
+infixl 1 &
+
+-- | Infix version of 'run'
+--
+-- You can think of this as like a pipe with an arrow pointing in the direction
+-- of the flow of data.
+(<|) :: forall a b r. Functional a b r => r -> a -> b
+(<|) = run
+
+infixr 1 <|
+
+-- | Infix version of 'run', but with the input on the left
+--
+-- You can think of this as like a pipe with an arrow pointing in the direction
+-- of the flow of data.
+(|>) :: forall a b r. Functional a b r => a -> r -> b
+(|>) = flip run
+
+infixl 1 |>
 
 -- | 'Normed' instance for 'Int's that returns a 'Natural'
 instance Normed Int Natural where
