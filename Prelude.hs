@@ -191,8 +191,8 @@ prettyText :: Pretty a => a -> Lazy.Text
 prettyText = displayT . renderPretty 0.4 80 . pretty
 
 -- | Pretty-print a type to (strict) 'Text'
-prettyText' :: Pretty a => a -> Lazy.Text
-prettyText' = displayT . renderPretty 0.4 80 . pretty
+prettyText' :: Pretty a => a -> Text
+prettyText' = displayTStrict . renderPretty 0.4 80 . pretty
 
 -- | A renaming of 'sequence', for situations where it looks nothing like
 -- sequencing
