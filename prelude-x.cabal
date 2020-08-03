@@ -12,14 +12,20 @@ extra-source-files:  README.md, CHANGELOG.md
 
 library
   exposed-modules:     Prelude
+                     , Test.Common
+
   default-language:    Haskell2010
 
-  build-depends:       adjunctions
+  build-depends:       HUnit
+                     , QuickCheck
+                     , adjunctions
                      , base >=4.14 && <4.15
                      , comonad
                      , containers
                      , distributive
                      , free
+                     , hedgehog
+                     , hspec
                      , mono-traversable
                      , newtype ^>= 0.2.2.0
                      , numhask ^>= 0.6.0.0
@@ -152,6 +158,10 @@ library
                      , Data.Word
                      , Debug.Trace
                      , GHC.Show as Show
+                     , Hedgehog
+                     , Hedgehog.Gen
+                     , Hedgehog.Main
+                     , Hedgehog.Range
                      , NumHask.Algebra.Abstract as Algebra.Abstract
                      , NumHask.Algebra.Abstract.Action as Algebra.Abstract.Action
                      , NumHask.Algebra.Abstract.Additive as Algebra.Abstract.Additive
@@ -183,6 +193,32 @@ library
                      , System.Mem.Weak
                      , System.Posix.Types
                      , System.Timeout
+                     , Test.HUnit
+                     , Test.HUnit.Base
+                     , Test.HUnit.Lang
+                     , Test.HUnit.Terminal
+                     , Test.HUnit.Text
+                     , Test.Hspec
+                     , Test.Hspec.Discover
+                     , Test.Hspec.Formatters
+                     , Test.Hspec.QuickCheck
+                     , Test.Hspec.Runner
+                     , Test.QuickCheck
+                     , Test.QuickCheck.All
+                     , Test.QuickCheck.Arbitrary
+                     , Test.QuickCheck.Exception
+                     , Test.QuickCheck.Features
+                     , Test.QuickCheck.Function
+                     , Test.QuickCheck.Gen
+                     , Test.QuickCheck.Gen.Unsafe
+                     , Test.QuickCheck.Modifiers
+                     , Test.QuickCheck.Monadic
+                     , Test.QuickCheck.Poly
+                     , Test.QuickCheck.Property
+                     , Test.QuickCheck.Random
+                     , Test.QuickCheck.State
+                     , Test.QuickCheck.Test
+                     , Test.QuickCheck.Text
                      , Text.PrettyPrint.Leijen.Text
                      , Text.PrettyPrint.Leijen.Text.Monadic
                      , Text.Printf
