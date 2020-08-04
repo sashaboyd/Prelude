@@ -52,6 +52,7 @@ module Prelude
     Functional (..),
     ($),
     (&),
+    allBounded,
   )
 where
 
@@ -65,6 +66,7 @@ import Control.Newtype as All
 import Data.Bifunctor.Apply as All
 import Data.Coerce as All
 import Data.Copointed as All
+import Data.Default.Class as All
 import Data.Distributive as All
 import Data.Functor.Apply as All
 import Data.Functor.Classes as All
@@ -177,6 +179,10 @@ infixr 2 ||
 (.:) = (.) (.) (.)
 
 infixr 8 .:
+
+-- | All values in a 'Bounded' 'Enum'
+allBounded :: (Enum a, Bounded a) => [a]
+allBounded = [minBound .. maxBound]
 
 -- | More readable synonym for 'point'
 goWith :: forall p a. Pointed p => a -> p a
