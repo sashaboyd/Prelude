@@ -32,6 +32,7 @@ library
                      , pointed
                      , profunctors
                      , recursion-schemes
+                     , semigroupoids
                      , text
                      , these
                      , wl-pprint-text
@@ -81,6 +82,7 @@ library
                      , Control.Newtype
                      , Data.Bifoldable
                      , Data.Bifunctor
+                     , Data.Bifunctor.Apply
                      , Data.Bitraversable
                      , Data.Bits
                      , Data.Bool
@@ -98,7 +100,12 @@ library
                      , Data.Function
                      , Data.Functor
                      , Data.Functor.Adjunction
+                     , Data.Functor.Alt
+                     , Data.Functor.Apply
                      , Data.Functor.Base
+                     , Data.Functor.Bind
+                     , Data.Functor.Bind.Class
+                     , Data.Functor.Bind.Trans
                      , Data.Functor.Classes
                      , Data.Functor.Compose
                      , Data.Functor.Composition
@@ -106,17 +113,21 @@ library
                      , Data.Functor.Contravariant
                      , Data.Functor.Contravariant.Adjunction
                      , Data.Functor.Contravariant.Rep
+                     , Data.Functor.Extend
                      , Data.Functor.Foldable
                      , Data.Functor.Foldable.TH
                      , Data.Functor.Identity
+                     , Data.Functor.Plus
                      , Data.Functor.Product
                      , Data.Functor.Rep
                      , Data.Functor.Sum
+                     , Data.Groupoid
                      , Data.Int
                      , Data.IntMap
                      , Data.IntMap.Lazy
                      , Data.IntMap.Strict
                      , Data.IntSet
+                     , Data.Isomorphism
                      , Data.Ix
                      , Data.Kind
                      , Data.List
@@ -134,6 +145,16 @@ library
                      , Data.Proxy
                      , Data.Ratio
                      , Data.Semigroup
+                     , Data.Semigroup.Bifoldable
+                     , Data.Semigroup.Bitraversable
+                     , Data.Semigroup.Foldable
+                     , Data.Semigroup.Foldable.Class
+                     , Data.Semigroup.Traversable
+                     , Data.Semigroup.Traversable.Class
+                     , Data.Semigroupoid
+                     , Data.Semigroupoid.Dual
+                     , Data.Semigroupoid.Ob
+                     , Data.Semigroupoid.Static
                      , Data.Sequence
                      , Data.Sequences
                      , Data.Set
@@ -146,6 +167,7 @@ library
                      , Data.These
                      , Data.These.Combinators
                      , Data.Traversable
+                     , Data.Traversable.Instances
                      , Data.Tree
                      , Data.Tuple
                      , Data.Type.Bool

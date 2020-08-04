@@ -62,11 +62,14 @@ import Control.Comonad.Cofree as All (Cofree)
 import Control.Comonad.Trans.Cofree as All (CofreeF (..))
 import Control.Monad.Free as All (Free)
 import Control.Newtype as All
+import Data.Bifunctor.Apply as All
 import Data.Coerce as All
 import Data.Copointed as All
 import Data.Distributive as All
+import Data.Functor.Apply as All
 import Data.Functor.Classes as All
 import Data.Functor.Compose as All
+import Data.Functor.Extend as All
 import Data.Functor.Foldable as All
 import qualified Data.Functor.Product as Functor
 import Data.Functor.Rep as All
@@ -79,13 +82,14 @@ import Data.Profunctor as All
 import Data.Profunctor.Sieve
 import Data.Profunctor.Strong as All
 import Data.Semigroup as All
+import Data.Semigroupoid as All
 import qualified Data.Sequence ()
 import Data.Sequences as All (Index, IsSequence, SemiSequence)
 import qualified Data.Sequences as Seq
 import qualified Data.Text.Lazy as Lazy
 import Data.These as All
 import GHC.Natural (intToNatural, naturalFromInteger)
-import NumHask.Prelude as All hiding (($), (&), (&&), (.), Distributive, First (..), Last (..), embed, fold, hoist, pack, unpack, yield, (||))
+import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, fold, hoist, pack, unpack, yield, (||))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 
 -- | Shorthand for natural numbers
