@@ -31,6 +31,7 @@ module Prelude
     type (⊗),
     type (.),
     type (∘),
+    type (~>),
     (!),
     (!!),
     swapF,
@@ -65,6 +66,7 @@ import Control.Monad.Free as All (Free)
 import Control.Newtype as All
 import Data.Bifunctor.Apply as All
 import Data.Coerce as All
+import Data.Containers as All
 import Data.Copointed as All
 import Data.Default.Class as All
 import Data.Distributive as All
@@ -88,10 +90,12 @@ import Data.Semigroupoid as All
 import qualified Data.Sequence ()
 import Data.Sequences as All (Index, IsSequence, SemiSequence)
 import qualified Data.Sequences as Seq
+import qualified Data.Set as Set
 import qualified Data.Text.Lazy as Lazy
 import Data.These as All
 import GHC.Natural (intToNatural, naturalFromInteger)
-import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, fold, hoist, pack, unpack, yield, (||))
+import qualified GHC.Num
+import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, fold, from, hoist, pack, to, unpack, yield, (||))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 
 -- | Shorthand for natural numbers
@@ -117,6 +121,9 @@ type f ∘ g = Compose f g
 
 -- | Infix operator for functor composition
 type f . g = Compose f g
+
+-- | Natural transformation between two functors.
+type (f ~> g) a = f a -> g a
 
 -- | Conjunction that works with more than just 'Bool's
 (&&) :: forall a. MeetSemiLattice a => a -> a -> a
@@ -353,3 +360,22 @@ instance {-# OVERLAPPING #-} Metric (Pair Integer) Natural where
 -- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
 instance {-# OVERLAPPING #-} Metric (Pair Natural) Natural where
   distance a b = norm (a - b)
+
+-- TODO: there's probably some utilities for laying these out nicely.
+instance (Ord k, Pretty k, Pretty a) => Pretty (Map k a) where
+  pretty m = "{ " <> Map.foldMapWithKey prettyItem m <> "}"
+    where
+      prettyItem k a = pretty k <> ": " <> pretty a <> " "
+
+instance (Ord a, Pretty a) => Pretty (Set a) where
+  pretty s = "{" <> foldMap id (intersperse (", ") (pretty <$> (Set.toList s))) <> "}"
+
+-- | Make everything with the appropriate methods part of the 'Num' class by default.
+instance {-# OVERLAPPABLE #-} (Ring a, Signed a, FromInteger a) => Num a where
+  (+) = (+)
+  (*) = (*)
+  abs = abs
+  signum = signum
+  fromInteger = fromInteger
+  negate = negate
+  (-) = (-)
