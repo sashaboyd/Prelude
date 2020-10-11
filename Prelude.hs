@@ -46,6 +46,7 @@ module Prelude
     (<|),
     (∘),
     (∘∘),
+    (∈),
     (.:),
     goWith,
     getOut,
@@ -124,6 +125,10 @@ type f . g = Compose f g
 
 -- | Natural transformation between two functors.
 type (f ~> g) a = f a -> g a
+
+-- | Infix operator for set membership.
+(∈) :: SetContainer set => ContainerKey set -> set -> Bool
+(∈) = member
 
 -- | Conjunction that works with more than just 'Bool's
 (&&) :: forall a. MeetSemiLattice a => a -> a -> a
@@ -360,6 +365,8 @@ instance {-# OVERLAPPING #-} Metric (Pair Integer) Natural where
 -- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
 instance {-# OVERLAPPING #-} Metric (Pair Natural) Natural where
   distance a b = norm (a - b)
+
+instance (FromIntegral a Integer, FromInteger a) => FromInteger (Pair a)
 
 -- TODO: there's probably some utilities for laying these out nicely.
 instance (Ord k, Pretty k, Pretty a) => Pretty (Map k a) where
