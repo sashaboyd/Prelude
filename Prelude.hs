@@ -23,6 +23,8 @@
 -- available by default, and safe functions are preferred by default.
 module Prelude
   ( module All,
+
+    -- * Type Synonyms and Type Operators
     N,
     Z,
     type (+),
@@ -32,12 +34,11 @@ module Prelude
     type (.),
     type (∘),
     type (~>),
+
+    -- * Operators and Utility Functions
     (!),
     (!!),
     swapF,
-    prettyPrint,
-    prettyText,
-    prettyText',
     (&&),
     (∧),
     (||),
@@ -50,13 +51,27 @@ module Prelude
     (.:),
     goWith,
     getOut,
+    allBounded,
+
+    -- * Pretty-Printing
+    prettyPrint,
+    prettyText,
+    prettyText',
+
+    -- * Optics
+    pairTuple,
+
+    -- * Newtypes
+    Sum (..),
+    Product (..),
+
+    -- * Function-Like Classes
     Partial (..),
     Functional (..),
     Algebra (..),
     Coalgebra (..),
     ($),
     (&),
-    allBounded,
   )
 where
 
@@ -88,7 +103,7 @@ import Data.Pointed as All
 import Data.Profunctor as All
 import Data.Profunctor.Sieve
 import Data.Profunctor.Strong as All
-import Data.Semigroup as All
+import Data.Semigroup as All hiding (Product (..), Sum (..))
 import Data.Semigroupoid as All
 import qualified Data.Sequence ()
 import Data.Sequences as All (Index, IsSequence, SemiSequence)
@@ -315,6 +330,30 @@ infixr 1 <|
 (|>) = flip run
 
 infixl 1 |>
+
+-- pairTuple :: Iso (Pair a) (Pair b) (a, a) (b, b)
+pairTuple :: (Profunctor p, Functor f) => p (a, a) (f (a, a)) -> p (Pair a) (f (Pair a))
+pairTuple = dimap (\(Pair x y) -> (x, y)) (map Pair')
+
+-- | Allow summing without having to define a full 'Num' instance
+newtype Sum a = Sum { getSum :: a}
+  deriving stock (Eq, Ord, Show, Read, Generic, Functor)
+
+instance Additive a => Semigroup (Sum a) where
+  Sum x <> Sum y = Sum (x + y)
+
+instance Additive a => Monoid (Sum a) where
+  mempty = Sum zero
+
+-- | Allow taking products of foldables etc. without a full 'Num' instance
+newtype Product a = Product { getProduct :: a}
+  deriving stock (Eq, Ord, Show, Read, Functor, Generic)
+
+instance Multiplicative a => Semigroup (Product a) where
+  Product x <> Product y = Product (x * y)
+
+instance Multiplicative a => Monoid (Product a) where
+  mempty = Product one
 
 -- | An F-algebra.
 --
