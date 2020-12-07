@@ -426,13 +426,17 @@ instance {-# OVERLAPPING #-} Metric (Pair Natural) Natural where
 instance (FromIntegral a Integer, FromInteger a) => FromInteger (Pair a)
 
 -- TODO: there's probably some utilities for laying these out nicely.
-instance (Ord k, Pretty k, Pretty a) => Pretty (Map k a) where
+instance {-# OVERLAPPING #-} (Ord k, Pretty k, Pretty a) => Pretty (Map k a) where
   pretty m = "{ " <> Map.foldMapWithKey prettyItem m <> "}"
     where
       prettyItem k a = pretty k <> ": " <> pretty a <> " "
 
-instance (Ord a, Pretty a) => Pretty (Set a) where
+instance {-# OVERLAPPING #-} (Ord a, Pretty a) => Pretty (Set a) where
   pretty s = "{" <> foldMap id (intersperse (", ") (pretty <$> (Set.toList s))) <> "}"
+
+-- | Fall back to 'show' when pretty printing, so that we can use the 'Pretty' class in place of 'Show'
+instance {-# OVERLAPPABLE #-} Show a => Pretty a where
+  pretty = text . show
 
 -- | Make everything with the appropriate methods part of the 'Num' class by default.
 instance {-# OVERLAPPABLE #-} (Ring a, Signed a, FromInteger a) => Num a where
