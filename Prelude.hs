@@ -68,8 +68,6 @@ module Prelude
     -- * Function-Like Classes
     Partial (..),
     Functional (..),
-    Algebra (..),
-    Coalgebra (..),
     ($),
     (&),
   )
@@ -354,22 +352,6 @@ instance Multiplicative a => Semigroup (Product a) where
 
 instance Multiplicative a => Monoid (Product a) where
   mempty = Product one
-
--- | An F-algebra.
---
--- A homomorphism h of F-algebras should satisfy merge alg ∘ fmap h = h ∘ merge alg.
-class Algebra alg where
-  type Sig alg :: Type -> Type
-  type Carrier alg :: Type
-  merge :: alg -> f a -> a
-
--- | An F-coalgebra.
---
--- A homomorphism h of F-coalgebras should satisfy fmap h ∘ step coalg = step coalg ∘ h.
-class Coalgebra coalg where
-  type Cosig coalg :: Type -> Type
-  type Cocarrier coalg :: Type
-  step :: coalg -> a -> f a
 
 -- | 'Normed' instance for 'Int's that returns a 'Natural'
 instance Normed Int Natural where
