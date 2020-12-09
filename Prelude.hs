@@ -416,10 +416,6 @@ instance {-# OVERLAPPING #-} (Ord k, Pretty k, Pretty a) => Pretty (Map k a) whe
 instance {-# OVERLAPPING #-} (Ord a, Pretty a) => Pretty (Set a) where
   pretty s = "{" <> foldMap id (intersperse (", ") (pretty <$> (Set.toList s))) <> "}"
 
--- | Fall back to 'show' when pretty printing, so that we can use the 'Pretty' class in place of 'Show'
-instance {-# OVERLAPPABLE #-} Show a => Pretty a where
-  pretty = text . show
-
 -- | Make everything with the appropriate methods part of the 'Num' class by default.
 instance {-# OVERLAPPABLE #-} (Ring a, Signed a, FromInteger a) => Num a where
   (+) = (+)
