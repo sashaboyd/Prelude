@@ -21,13 +21,9 @@ instance MeetSemiLattice Property where (/\) = (.&&.)
 
 instance JoinSemiLattice Property where (\/) = (.||.)
 
-instance Lattice Property
-
 instance BoundedJoinSemiLattice Property where bottom = property rejected
 
 instance BoundedMeetSemiLattice Property where top = property succeeded
-
-instance BoundedLattice Property
 
 instance Arbitrary Natural where
   arbitrary = fromInteger . abs <$> arbitrary
@@ -35,12 +31,6 @@ instance Arbitrary Natural where
 
 instance CoArbitrary Natural where
   coarbitrary = variant
-
-instance Arbitrary a => Arbitrary (Pair a) where
-  arbitrary = Pair <$> arbitrary <*> arbitrary
-  shrink (Pair x y) = Pair <$> (shrink x) <*> (shrink y)
-
-instance CoArbitrary a => CoArbitrary (Pair a)
 
 instance Arbitrary2 These where
   liftArbitrary2 gena genb = oneof [This <$> gena, That <$> genb, These <$> gena <*> genb]

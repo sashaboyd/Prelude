@@ -58,9 +58,6 @@ module Prelude
     prettyText,
     prettyText',
 
-    -- * Optics
-    pairTuple,
-
     -- * Newtypes
     Sum (..),
     Product (..),
@@ -329,10 +326,6 @@ infixr 1 <|
 
 infixl 1 |>
 
--- pairTuple :: Iso (Pair a) (Pair b) (a, a) (b, b)
-pairTuple :: (Profunctor p, Functor f) => p (a, a) (f (a, a)) -> p (Pair a) (f (Pair a))
-pairTuple = dimap (\(Pair x y) -> (x, y)) (map Pair')
-
 -- | Allow summing without having to define a full 'Num' instance
 newtype Sum a = Sum { getSum :: a}
   deriving stock (Eq, Ord, Show, Read, Generic, Functor)
@@ -352,60 +345,6 @@ instance Multiplicative a => Semigroup (Product a) where
 
 instance Multiplicative a => Monoid (Product a) where
   mempty = Product one
-
--- | 'Normed' instance for 'Int's that returns a 'Natural'
-instance Normed Int Natural where
-  norm = intToNatural . abs
-
--- | 'Normed' instance for 'Integer's that returns a 'Natural'
-instance Normed Integer Natural where
-  norm = naturalFromInteger . abs
-
--- | Rectilinear norm for 'Int' 'NumHask.Data.Pair's
---
--- NOTE: Because of the way variables are matched and then constrained, Pair Int
--- technically matches the (ExpField a, Normed a a) => Normed (Pair a) a
--- instance, even though Ints don't match the ExpField constraint, so we have to
--- declare this instance as overlapping that one.
-instance {-# OVERLAPPING #-} Normed (Pair Int) Int where
-  norm (Pair x y) = norm x + norm y
-
-instance {-# OVERLAPPING #-} Normed (Pair Integer) Integer where
-  norm (Pair x y) = norm x + norm y
-
--- | Rectilinear norm for 'Int' 'NumHask.Data.Pair's that returns a 'Natural'
-instance {-# OVERLAPPING #-} Normed (Pair Int) Natural where
-  norm (Pair x y) = norm x + norm y
-
-instance {-# OVERLAPPING #-} Normed (Pair Integer) Natural where
-  norm (Pair x y) = norm x + norm y
-
--- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
-instance {-# OVERLAPPING #-} Normed (Pair Natural) Natural where
-  norm (Pair x y) = norm x + norm y
-
--- | Rectilinear distance for 'Int' 'NumHask.Data.Pair's
---
--- This goes by a bunch of different names, like Manhattan distance, taxicab
--- distance, etc.
-instance {-# OVERLAPPING #-} Metric (Pair Int) Int where
-  distance a b = norm (a - b)
-
-instance {-# OVERLAPPING #-} Metric (Pair Integer) Integer where
-  distance a b = norm (a - b)
-
--- | Rectilinear distance that returns a 'Natural'
-instance {-# OVERLAPPING #-} Metric (Pair Int) Natural where
-  distance a b = norm (a - b)
-
-instance {-# OVERLAPPING #-} Metric (Pair Integer) Natural where
-  distance a b = norm (a - b)
-
--- | Rectilinear distance for 'Natural' 'NumHask.Data.Pair's
-instance {-# OVERLAPPING #-} Metric (Pair Natural) Natural where
-  distance a b = norm (a - b)
-
-instance (FromIntegral a Integer, FromInteger a) => FromInteger (Pair a)
 
 -- TODO: there's probably some utilities for laying these out nicely.
 instance {-# OVERLAPPING #-} (Ord k, Pretty k, Pretty a) => Pretty (Map k a) where
