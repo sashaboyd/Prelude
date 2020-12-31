@@ -13,6 +13,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# OPTIONS_HADDOCK not-home, prune #-}
 
@@ -49,14 +50,16 @@ module Prelude
     (∘∘),
     (∈),
     (.:),
-    goWith,
-    getOut,
     allBounded,
+    reduce,
 
     -- * Pretty-Printing
     prettyPrint,
     prettyText,
     prettyText',
+    tracePretty,
+    tracePrettyM,
+    tracePrettyId,
 
     -- * Newtypes
     Sum (..),
@@ -87,7 +90,7 @@ import Data.Functor.Apply as All
 import Data.Functor.Classes as All
 import Data.Functor.Compose as All
 import Data.Functor.Extend as All
-import Data.Functor.Foldable as All
+import Data.Functor.Foldable as All hiding (fold)
 import qualified Data.Functor.Product as Functor
 import Data.Functor.Rep as All
 import qualified Data.Functor.Sum as Functor
@@ -108,7 +111,7 @@ import qualified Data.Text.Lazy as Lazy
 import Data.These as All
 import GHC.Natural (intToNatural, naturalFromInteger)
 import qualified GHC.Num
-import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, fold, from, hoist, pack, to, unpack, yield, (||))
+import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, from, hoist, pack, reduce, to, unpack, yield, (||))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 
 -- | Shorthand for natural numbers
@@ -201,32 +204,46 @@ infixr 2 ||
   a1 ->
   (a2 `k` c)
 (.:) = (.) (.) (.)
+{-# INLINE (.:) #-}
 
 infixr 8 .:
+
+-- | Alternative synonym for 'ana', so we can still use 'fold'
+reduce :: Recursive t => (Base t a -> a) -> t -> a
+reduce = cata
+{-# INLINE reduce #-}
 
 -- | All values in a 'Bounded' 'Enum'
 allBounded :: (Enum a, Bounded a) => [a]
 allBounded = [minBound .. maxBound]
-
--- | More readable synonym for 'point'
-goWith :: forall p a. Pointed p => a -> p a
-goWith = point
-
--- | More readable synonym for 'copoint'
-getOut :: forall p a. Copointed p => p a -> a
-getOut = copoint
+{-# INLINE allBounded #-}
 
 -- | Replacement for 'print' with nicer output where possible
 prettyPrint :: (Pretty a, MonadIO m) => a -> m ()
 prettyPrint = putStrLn . prettyText
+{-# INLINE prettyPrint #-}
 
 -- | Pretty-print a type to (lazy) 'Lazy.Text'
 prettyText :: Pretty a => a -> Lazy.Text
 prettyText = displayT . renderPretty 0.4 80 . pretty
+{-# INLINE prettyText #-}
 
 -- | Pretty-print a type to (strict) 'Text'
 prettyText' :: Pretty a => a -> Text
 prettyText' = displayTStrict . renderPretty 0.4 80 . pretty
+{-# INLINE prettyText' #-}
+
+{-# WARNING tracePretty "'tracePretty' remains in code" #-}
+tracePretty :: Pretty b => b -> a -> a
+tracePretty = trace . prettyText'
+
+{-# WARNING tracePrettyM "'tracePrettyM' remains in code" #-}
+tracePrettyM :: (Monad m, Pretty a) => a -> m ()
+tracePrettyM = traceM . prettyText'
+
+{-# WARNING tracePrettyId "'tracePrettyId' remains in code" #-}
+tracePrettyId :: Pretty a => a -> a
+tracePrettyId a = tracePretty a a
 
 -- | A renaming of 'sequence', for situations where it looks nothing like
 -- sequencing
@@ -237,6 +254,7 @@ prettyText' = displayTStrict . renderPretty 0.4 80 . pretty
 -- 'Distributive' class
 swapF :: forall t f a. (Traversable t, Applicative f) => t (f a) -> f (t a)
 swapF = sequenceA
+{-# INLINE swapF #-}
 
 -- | A 'Map' as a 'Profunctor'
 --
@@ -327,7 +345,7 @@ infixr 1 <|
 infixl 1 |>
 
 -- | Allow summing without having to define a full 'Num' instance
-newtype Sum a = Sum { getSum :: a}
+newtype Sum a = Sum {getSum :: a}
   deriving stock (Eq, Ord, Show, Read, Generic, Functor)
 
 instance Additive a => Semigroup (Sum a) where
@@ -337,7 +355,7 @@ instance Additive a => Monoid (Sum a) where
   mempty = Sum zero
 
 -- | Allow taking products of foldables etc. without a full 'Num' instance
-newtype Product a = Product { getProduct :: a}
+newtype Product a = Product {getProduct :: a}
   deriving stock (Eq, Ord, Show, Read, Functor, Generic)
 
 instance Multiplicative a => Semigroup (Product a) where
