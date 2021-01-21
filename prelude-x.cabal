@@ -41,8 +41,12 @@ library
   default-extensions:  NoImplicitPrelude
 
   reexported-modules:  Control.Alternative.Free
+                     , Control.Alternative.Free.Final
                      , Control.Applicative
                      , Control.Applicative.Free
+                     , Control.Applicative.Free.Fast
+                     , Control.Applicative.Free.Final
+                     , Control.Applicative.Trans.Free
                      , Control.Arrow
                      , Control.Category
                      , Control.Comonad
@@ -53,6 +57,7 @@ library
                      , Control.Comonad.Representable.Store
                      , Control.Comonad.Store
                      , Control.Comonad.Store.Class
+                     , Control.Comonad.Trans.Cofree
                      , Control.Comonad.Trans.Coiter
                      , Control.Concurrent
                      , Control.Concurrent.Chan
@@ -65,6 +70,8 @@ library
                      , Control.Monad.Fail
                      , Control.Monad.Fix
                      , Control.Monad.Free
+                     , Control.Monad.Free.Ap
+                     , Control.Monad.Free.Church
                      , Control.Monad.Free.Class
                      , Control.Monad.Free.TH
                      , Control.Monad.IO.Class
@@ -78,6 +85,9 @@ library
                      , Control.Monad.ST.Safe
                      , Control.Monad.ST.Strict
                      , Control.Monad.ST.Unsafe
+                     , Control.Monad.Trans.Free
+                     , Control.Monad.Trans.Free.Ap
+                     , Control.Monad.Trans.Free.Church
                      , Control.Monad.Trans.Iter
                      , Control.Monad.Zip
                      , Control.Newtype
@@ -144,6 +154,21 @@ library
                      , Data.Ord
                      , Data.Pointed
                      , Data.Profunctor
+                     , Data.Profunctor.Adjunction
+                     , Data.Profunctor.Cayley
+                     , Data.Profunctor.Choice
+                     , Data.Profunctor.Closed
+                     , Data.Profunctor.Composition
+                     , Data.Profunctor.Mapping
+                     , Data.Profunctor.Monad
+                     , Data.Profunctor.Ran
+                     , Data.Profunctor.Rep
+                     , Data.Profunctor.Sieve
+                     , Data.Profunctor.Strong
+                     , Data.Profunctor.Traversing
+                     , Data.Profunctor.Types
+                     , Data.Profunctor.Unsafe
+                     , Data.Profunctor.Yoneda
                      , Data.Proxy
                      , Data.Ratio
                      , Data.Semigroup
