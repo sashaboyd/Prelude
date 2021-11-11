@@ -7,3 +7,4 @@ haddock-executables: true
 haddock-tests: true
 haddock-internal: true
 haddock-hyperlink-source: true
+allow-newer: base-compat, template-haskell

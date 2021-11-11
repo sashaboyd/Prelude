@@ -1,13 +1,13 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -52,6 +52,8 @@ module Prelude
     (.:),
     allBounded,
     reduce,
+    futuHoist,
+    hoistM,
 
     -- * Pretty-Printing
     prettyPrint,
@@ -79,7 +81,6 @@ import Control.Comonad as All
 import Control.Comonad.Cofree as All (Cofree)
 import Control.Comonad.Trans.Cofree as All (CofreeF (..))
 import Control.Monad.Free as All (Free)
-import Control.Newtype as All
 import Data.Bifunctor.Apply as All
 import Data.Coerce as All
 import Data.Containers as All
@@ -109,7 +110,6 @@ import qualified Data.Sequences as Seq
 import qualified Data.Set as Set
 import qualified Data.Text.Lazy as Lazy
 import Data.These as All
-import GHC.Natural (intToNatural, naturalFromInteger)
 import qualified GHC.Num
 import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, from, hoist, pack, reduce, to, unpack, yield, (||))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
@@ -139,7 +139,7 @@ type f ∘ g = Compose f g
 type f . g = Compose f g
 
 -- | Natural transformation between two functors.
-type (f ~> g) a = f a -> g a
+type (f ~> g) = forall x. f x -> g x
 
 -- | Infix operator for set membership.
 (∈) :: SetContainer set => ContainerKey set -> set -> Bool
@@ -208,10 +208,36 @@ infixr 2 ||
 
 infixr 8 .:
 
--- | Alternative synonym for 'ana', so we can still use 'fold'
+-- | Alternative synonym for 'cata', so we can still use 'fold'
 reduce :: Recursive t => (Base t a -> a) -> t -> a
 reduce = cata
 {-# INLINE reduce #-}
+
+-- | A variant of hoist that allows multiple layers of the corecursive structure
+-- to be generated from a single layer of the recursive structure.
+futuHoist ::
+  forall s t.
+  (Recursive s, Corecursive t) =>
+  -- | change of base functor
+  (forall x. Base s x -> Base t (Free (Base t) x)) ->
+  s ->
+  t
+futuHoist = hoistM distFutu
+{-# INLINE futuHoist #-}
+
+-- | A version of hoist with a distributive law for the corecursive structure
+hoistM ::
+  forall s t m.
+  (Recursive s, Corecursive t, Monad m) =>
+  -- | distributive law for t
+  (forall x. m (Base t x) -> Base t (m x)) ->
+  -- | change of base functor
+  (forall x. Base s x -> Base t (m x)) ->
+  s ->
+  t
+hoistM distMT f = go . pure . f . project
+  where
+    go = embed . fmap (go . fmap (f . project) . join) . distMT
 
 -- | All values in a 'Bounded' 'Enum'
 allBounded :: (Enum a, Bounded a) => [a]

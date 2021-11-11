@@ -19,7 +19,7 @@ library
   build-depends:       HUnit
                      , QuickCheck
                      , adjunctions
-                     , base >=4.14 && <4.15
+                     , base >=4.16 && <4.17
                      , comonad
                      , containers
                      , data-default-class
@@ -28,8 +28,7 @@ library
                      , hedgehog
                      , hspec
                      , mono-traversable
-                     , newtype ^>= 0.2.2.0
-                     , numhask ^>= 0.7.0.0
+                     , numhask ^>= 0.8.0.0
                      , pointed
                      , profunctors
                      , recursion-schemes
@@ -90,7 +89,6 @@ library
                      , Control.Monad.Trans.Free.Church
                      , Control.Monad.Trans.Iter
                      , Control.Monad.Zip
-                     , Control.Newtype
                      , Data.Bifoldable
                      , Data.Bifunctor
                      , Data.Bifunctor.Apply
@@ -215,16 +213,13 @@ library
                      , NumHask.Algebra.Field as Algebra.Field
                      , NumHask.Algebra.Group as Algebra.Group
                      , NumHask.Algebra.Lattice as Algebra.Lattice
+                     , NumHask.Algebra.Metric as Algebra.Metric
                      , NumHask.Algebra.Module as Algebra.Module
                      , NumHask.Algebra.Multiplicative as Algebra.Multiplicative
                      , NumHask.Algebra.Ring as Algebra.Ring
-                     , NumHask.Analysis.Metric as Analysis.Metric
                      , NumHask.Data.Complex as Data.Complex
                      , NumHask.Data.Integral as Data.Integral
-                     , NumHask.Data.LogField as Data.LogField
-                     , NumHask.Data.Positive as Data.Positive
                      , NumHask.Data.Rational as Data.Rational
-                     , NumHask.Data.Wrapped as Data.Wrapped
                      , NumHask.Exception
                      , NumHask.Prelude
                      , Numeric.Natural
