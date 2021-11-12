@@ -95,7 +95,9 @@ import Data.Functor.Foldable as All hiding (fold)
 import qualified Data.Functor.Product as Functor
 import Data.Functor.Rep as All
 import qualified Data.Functor.Sum as Functor
+import Data.IntMap (IntMap)
 import qualified Data.IntMap as IntMap
+import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.MonoTraversable as All hiding (headMay, lastMay, maximumMay, minimumMay)
 import Data.Pointed as All
@@ -108,11 +110,19 @@ import qualified Data.Sequence ()
 import Data.Sequences as All (Index, IsSequence, SemiSequence)
 import qualified Data.Sequences as Seq
 import qualified Data.Set as Set
+import Data.Set (Set)
 import qualified Data.Text.Lazy as Lazy
+import qualified Data.Text as Strict
+import qualified Data.Text.IO as Strict.IO
+import qualified Data.Text.Lazy.IO as Lazy.IO
 import Data.These as All
 import qualified GHC.Num
-import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, from, hoist, pack, reduce, to, unpack, yield, (||))
+import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, from, hoist, pack, reduce, to, unpack, yield, (||), Product (..), Sum (..), Rep (..), id, lookup, (!!))
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
+import Control.Monad.IO.Class
+import qualified Data.List as List
+import Control.Monad as All
+import Debug.Trace as All
 
 -- | Shorthand for natural numbers
 type N = Natural
@@ -246,7 +256,7 @@ allBounded = [minBound .. maxBound]
 
 -- | Replacement for 'print' with nicer output where possible
 prettyPrint :: (Pretty a, MonadIO m) => a -> m ()
-prettyPrint = putStrLn . prettyText
+prettyPrint = liftIO . Strict.IO.putStrLn . prettyText'
 {-# INLINE prettyPrint #-}
 
 -- | Pretty-print a type to (lazy) 'Lazy.Text'
@@ -254,18 +264,18 @@ prettyText :: Pretty a => a -> Lazy.Text
 prettyText = displayT . renderPretty 0.4 80 . pretty
 {-# INLINE prettyText #-}
 
--- | Pretty-print a type to (strict) 'Text'
-prettyText' :: Pretty a => a -> Text
+-- | Pretty-print a type to (strict) 'Strict.Text'
+prettyText' :: Pretty a => a -> Strict.Text
 prettyText' = displayTStrict . renderPretty 0.4 80 . pretty
 {-# INLINE prettyText' #-}
 
 {-# WARNING tracePretty "'tracePretty' remains in code" #-}
 tracePretty :: Pretty b => b -> a -> a
-tracePretty = trace . prettyText'
+tracePretty = trace . Strict.unpack . prettyText'
 
 {-# WARNING tracePrettyM "'tracePrettyM' remains in code" #-}
 tracePrettyM :: (Monad m, Pretty a) => a -> m ()
-tracePrettyM = traceM . prettyText'
+tracePrettyM = traceM . Strict.unpack . prettyText'
 
 {-# WARNING tracePrettyId "'tracePrettyId' remains in code" #-}
 tracePrettyId :: Pretty a => a -> a
@@ -305,7 +315,7 @@ class Partial a b p | p -> a, p -> b where
   runPartial :: p -> a -> Maybe b
   unsafeRunPartial :: p -> a -> b
   unsafeRunPartial p a = case runPartial p a of
-    Nothing -> panic "Index out of bounds"
+    Nothing -> error "Index out of bounds"
     Just b -> b
 
 instance Partial a b (a -> Maybe b) where runPartial = id
@@ -397,7 +407,7 @@ instance {-# OVERLAPPING #-} (Ord k, Pretty k, Pretty a) => Pretty (Map k a) whe
       prettyItem k a = pretty k <> ": " <> pretty a <> " "
 
 instance {-# OVERLAPPING #-} (Ord a, Pretty a) => Pretty (Set a) where
-  pretty s = "{" <> foldMap id (intersperse (", ") (pretty <$> (Set.toList s))) <> "}"
+  pretty s = "{" <> foldMap id (List.intersperse (", ") (pretty <$> (Set.toList s))) <> "}"
 
 -- | Make everything with the appropriate methods part of the 'Num' class by default.
 instance {-# OVERLAPPABLE #-} (Ring a, Signed a, FromInteger a) => Num a where
