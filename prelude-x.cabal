@@ -204,7 +204,13 @@ library
                      , Data.Void
                      , Data.Word
                      , Debug.Trace
-                     , GHC.Show as Show
+                     , GHC.Enum
+                     , GHC.Exts
+                     , GHC.Generics
+                     , GHC.Num
+                     , GHC.Read
+                     , GHC.Show
+                     , GHC.Stats
                      , Hedgehog
                      , Hedgehog.Gen
                      , Hedgehog.Main
