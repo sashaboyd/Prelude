@@ -51,6 +51,7 @@ module Prelude
     (∈),
     (.:),
     allBounded,
+    map,
     reduce,
     futuHoist,
     hoistM,
@@ -114,10 +115,9 @@ import Data.Set (Set)
 import qualified Data.Text.Lazy as Lazy
 import qualified Data.Text as Strict
 import qualified Data.Text.IO as Strict.IO
-import qualified Data.Text.Lazy.IO as Lazy.IO
 import Data.These as All
 import qualified GHC.Num
-import NumHask.Prelude as All hiding (($), (&), (&&), (.), Alt, Distributive, First (..), Last (..), embed, from, hoist, pack, reduce, to, unpack, yield, (||), Product (..), Sum (..), Rep (..), id, lookup, (!!))
+import NumHask.Prelude as All hiding (($), (&&), (.), Distributive, First (..), Last (..), from, reduce, to, (||), Product (..), Sum (..), Rep, id, lookup, (!!), map)
 import Text.PrettyPrint.Leijen.Text as All (Pretty (..), char, displayT, displayTStrict, nest, renderPretty, text, textStrict)
 import Control.Monad.IO.Class
 import qualified Data.List as List
@@ -217,6 +217,10 @@ infixr 2 ||
 {-# INLINE (.:) #-}
 
 infixr 8 .:
+
+-- | A more general version of map
+map :: Functor f => (a -> b) -> f a -> f b
+map = fmap
 
 -- | Alternative synonym for 'cata', so we can still use 'fold'
 reduce :: Recursive t => (Base t a -> a) -> t -> a
